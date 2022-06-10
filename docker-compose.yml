@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  web:
+    restart: always
+    container_name: backend_api
+    build:
+      context: .
+      network: host
+      dockerfile: ./docker/dev/Dockerfile
+    entrypoint: /usr/src/app/entrypoint.sh
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8008:8008"
+    environment:
+      - DATABASE=postgres
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+    expose:
+      - 8008
+    depends_on:
+      - db
+
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: gnsaddy@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+
+volumes:
+  postgres_data:
