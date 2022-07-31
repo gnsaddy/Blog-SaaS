@@ -1,5 +1,5 @@
 """
-WSGI config for multi_tenant_blog project.
+WSGI config for cms_ms project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'multi_tenant_blog.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cms_ms.settings')
 
 application = get_wsgi_application()

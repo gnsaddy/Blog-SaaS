@@ -1,18 +1,9 @@
 version: "3.8"
 
 services:
-  db:
-    image: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-
-  web:
+  cms:
     restart: always
-    container_name: backend_api
+    container_name: cms_ms
     build:
       context: .
       network: host
@@ -20,29 +11,29 @@ services:
     entrypoint: /usr/src/app/entrypoint.sh
     volumes:
       - .:/usr/src/app
-    ports:
-      - "8008:8008"
-    environment:
-      - DATABASE=postgres
-      - POSTGRES_NAME=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
+      - static_volume:/usr/src/app/static/
+      - media_volume:/usr/app/media/
+    env_file:
+      - .env.development
     expose:
       - 8008
-    depends_on:
-      - db
 
-  pgadmin:
-    container_name: pgadmin4_container
-    image: dpage/pgadmin4
+  nginx:
+    build:
+      dockerfile: Dockerfile
+      network: host
+      context: ./nginx
+    container_name: cms_ms_nginx
     restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: gnsaddy@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: root
+    volumes:
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/app/media/
     ports:
-      - "5050:80"
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - cms
 
 volumes:
-  postgres_data:
+  static_volume:
+  media_volume:

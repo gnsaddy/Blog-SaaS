@@ -7,30 +7,26 @@ do
     echo "**************** Waiting for server volume ****************"
 done
 
-echo "**************** Waiting for db to be ready ****************"
+date +'FORMAT'
+### mm/dd/yyyy ###
+date +'%m/%d/%Y'
+## Time in 12 hr format ###
+date +'%r'
+## backup dir format ##
+migrate_time=$(date +'%m/%d/%Y')
 
-if [ "$DATABASE" = "postgres" ]
-then
-    echo "Waiting for postgres..."
-
-    while ! nc -z "$POSTGRES_HOST" "$POSTGRES_PORT"; do
-      sleep 0.1
-    done
-
-    echo "PostgreSQL started"
-fi
 
 echo "**************** migrating ****************"
-python ./manage.py migrate
+python ./manage.py migrate --noinput --run-syncdb
 
 echo "**************** running migrations ****************"
 python ./manage.py makemigrations
 
-python ./manage.py migrate
+python ./manage.py migrate --noinput --run-syncdb
 
 echo "**************** collecting static ****************"
 python ./manage.py collectstatic --noinput
 
 echo "**************** starting gunicorn ****************"
-gunicorn --bind 0.0.0.0:8008 multi_tenant_blog.wsgi --workers 2 --threads 4 --log-level debug --reload
+gunicorn --bind 0.0.0.0:8008 cms_ms.wsgi --workers=2 --threads=4 --log-level debug --reload --timeout=300 
 echo "**************** gunicorn running ****************"

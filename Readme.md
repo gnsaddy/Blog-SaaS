@@ -1,4 +1,5 @@
-docker-compose -f docker-compose.prod.yml exec web python manage.py migrate --noinput
+docker-compose -f docker-compose.yml exec cms python manage.py migrate --noinput
+docker-compose -f docker-compose.yml exec cms python manage.py makemigrations
 
 
- find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf
+docker-compose -f docker-compose.yml exec web python manage.py createsuperuser
